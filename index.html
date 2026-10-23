@@ -4,196 +4,332 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Used Car Shop | 二手车精选</title>
+<title>二手车行 | Used Cars Malaysia</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --blue: #163B65;
-  --light-blue: #68B7E8;
-  --bg: #F5F8FC;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: #172536;
-}
-header {
-  background: var(--blue);
-  color: white;
-  padding: 20px 6%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.logo { font-size: 22px; font-weight: bold; }
-.logo span { color: var(--light-blue); }
-button, select {
-  padding: 11px 14px;
-  border-radius: 8px;
-  border: 1px solid #dce5ef;
-  cursor: pointer;
-}
-header select { background: white; color: var(--blue); }
-.hero {
-  margin: 25px auto;
-  max-width: 1100px;
-  padding: 55px 7%;
-  border-radius: 20px;
-  background: var(--blue);
-  color: white;
-}
-.hero h1 { font-size: clamp(32px, 5vw, 48px); }
-.hero p { line-height: 1.8; color: #e0ebf6; }
-.cta {
-  background: var(--light-blue);
-  color: #102b45;
-  border: 0;
-  font-weight: bold;
-}
-main { max-width: 1100px; margin: auto; padding: 0 18px 45px; }
-.tools { display: flex; gap: 10px; margin: 25px 0; }
-.tools input {
-  flex: 1;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid #dce5ef;
-  border-radius: 8px;
-}
-h2 { color: var(--blue); }
-.cars {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-  gap: 20px;
-}
-.car {
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #dce5ef;
-}
-.car-image {
-  background: #e4edf7;
-  height: 165px;
-  display: grid;
-  place-items: center;
-  font-size: 70px;
-}
-.car-info { padding: 18px; }
-.price { color: var(--blue); font-size: 23px; font-weight: bold; }
-.contact {
-  display: inline-block;
-  text-decoration: none;
-  background: var(--blue);
-  color: white;
-  padding: 11px 14px;
-  border-radius: 8px;
-}
-footer {
-  background: var(--blue);
-  color: white;
-  text-align: center;
-  padding: 28px 15px;
-}
-@media(max-width:500px) {
-  .tools { flex-direction: column; }
-  .hero { margin: 14px; padding: 30px 22px; }
-}
+:root{--navy:#102747;--blue:#1e4778;--gold:#e8b85c;--bg:#f4f7fb;--white:#fff;--muted:#69778b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans SC",sans-serif;background:var(--bg);color:#17263c}
+header{background:var(--navy);color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:800}.brand span{color:var(--gold)}
+nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:700}
+.lang{background:#294362;color:white}.primary{background:var(--gold);color:#14243a}
+.darkbtn{background:var(--navy);color:white}.lightbtn{background:#e8eef6;color:var(--navy)}
+.hero{background:linear-gradient(120deg,#102747,#28527f);color:white;padding:52px 6%;text-align:center}
+.hero h1{font-size:clamp(28px,5vw,48px);margin:0 0 14px}
+.hero p{color:#e1eaf4;font-size:17px;line-height:1.7}
+.wrap{max-width:1200px;margin:auto;padding:26px 18px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 24px}
+.toolbar input{flex:1;min-width:180px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #d5deea;border-radius:8px;background:white;color:#17263c}
+.toolbar select{width:auto;min-width:130px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:20px}
+.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 5px 22px #132c4a12}
+.gallery{position:relative;background:#e7edf4;aspect-ratio:4/3;overflow:hidden}
+.gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery img.noimage{object-fit:contain;padding:30px}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);background:#102747cc;color:white;border-radius:50%;padding:9px 13px}
+.prev{left:10px}.next{right:10px}
+.counter{position:absolute;bottom:9px;right:10px;background:#102747cc;color:white;padding:5px 9px;border-radius:15px;font-size:12px}
+.cardbody{padding:17px}
+.price{font-size:24px;font-weight:800;color:#163d6c;margin:10px 0}
+.description{color:var(--muted);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.wa{background:#16864b;color:white;flex:1;text-align:center;text-decoration:none;padding:12px;border-radius:8px;font-weight:bold}
+section h2{color:var(--navy)}
+.panel{background:white;border-radius:14px;padding:20px;margin:18px 0;box-shadow:0 4px 18px #132c4a0c}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label{display:block;font-size:14px;font-weight:bold;margin-bottom:6px}
+.field{margin-bottom:13px}
+textarea{min-height:100px;resize:vertical}
+.notice{padding:12px;border-radius:8px;background:#e9f1fb;line-height:1.6}
+.hidden{display:none!important}
+footer{text-align:center;background:var(--navy);color:#dbe5f1;padding:25px}
+.small{font-size:13px;color:var(--muted)}
+.status{font-size:13px;color:#61738b;margin:12px 0}
+@media(max-width:600px){header{padding:15px}.brand{font-size:19px}.hero{padding:38px 18px}.wrap{padding:20px 13px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">DRIVE<span>•</span>SELECT</div>
-  <select id="language" onchange="changeLanguage()">
-    <option value="zh">中文</option>
-    <option value="en">English</option>
-    <option value="ms">Bahasa Melayu</option>
-  </select>
+  <div class="brand">二手车行 <span>|</span> Used Cars</div>
+  <nav>
+    <button class="lang" onclick="setLang('zh')">中文</button>
+    <button class="lang" onclick="setLang('en')">English</button>
+    <button class="lang" onclick="setLang('ms')">Bahasa</button>
+    <button class="primary" onclick="showAdmin()">管理员登录 / Admin</button>
+  </nav>
 </header>
 
-<section class="hero">
-  <h1 id="heading">找到适合你的下一辆车。</h1>
-  <p id="intro">精选二手车，价格清楚。欢迎预约看车，直接 WhatsApp 联系我们。</p>
-  <button class="cta" onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" id="browse">浏览车辆 ↓</button>
-</section>
+<div class="hero">
+  <h1 id="heroTitle">寻找适合你的好车</h1>
+  <p id="heroSub">精选二手车 · 价格透明 · WhatsApp 直接联系</p>
+  <button class="primary" onclick="document.getElementById('inventory').scrollIntoView({behavior:'smooth'})" id="browseBtn">浏览车辆</button>
+</div>
 
-<main id="inventory">
-  <h2 id="inventoryTitle">精选车辆</h2>
-  <div class="tools">
-    <input id="search" placeholder="搜索品牌或车型……" oninput="renderCars()">
-  </div>
-  <div class="cars" id="cars"></div>
+<main class="wrap">
+  <section id="inventory">
+    <h2 id="inventoryTitle">在售车辆</h2>
+    <div class="toolbar">
+      <input id="search" placeholder="搜索品牌、车型或关键词…" oninput="renderCars()">
+      <select id="sort" onchange="renderCars()">
+        <option value="new">最新上架</option>
+        <option value="low">价格由低至高</option>
+        <option value="high">价格由高至低</option>
+      </select>
+    </div>
+    <div id="carGrid" class="grid"></div>
+    <p id="loadStatus" class="status">正在加载车辆…</p>
+  </section>
+
+  <section id="adminSection" class="hidden">
+    <h2>管理员后台 / Admin</h2>
+    <div class="panel" id="loginPanel">
+      <p>使用你在 Supabase Authentication 创建的管理员账号登录。</p>
+      <div class="field"><label for="email">邮箱 / Email</label><input id="email" type="email" autocomplete="username" placeholder="你的管理员邮箱"></div>
+      <div class="field"><label for="password">密码 / Password</label><input id="password" type="password" autocomplete="current-password" placeholder="管理员密码"></div>
+      <button class="darkbtn" onclick="login()">登录 / Login</button>
+      <p id="loginStatus" class="status"></p>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <div class="panel">
+        <div class="notice">登录后可新增车辆、上传多张照片、修改车辆资料或下架车辆。顾客只能看到已上架的车辆。</div>
+        <p id="adminStatus" class="status"></p>
+        <button class="lightbtn" onclick="logout()">退出登录 / Logout</button>
+      </div>
+      <div class="panel">
+        <h3 id="formTitle">新增车辆 / Add car</h3>
+        <form id="carForm" onsubmit="saveCar(event)">
+          <input type="hidden" id="editId">
+          <div class="fields">
+            <div class="field"><label for="carTitle">车辆名称 / Car title *</label><input id="carTitle" required maxlength="150" placeholder="例如：2021 Toyota Vios"></div>
+            <div class="field"><label for="carPrice">价格 RM / Price *</label><input id="carPrice" type="number" min="0" step="0.01" required placeholder="例如：45800"></div>
+          </div>
+          <div class="field"><label for="carDesc">车辆资料 / Description</label><textarea id="carDesc" placeholder="年份、里程、排量、变速箱、车况等"></textarea></div>
+          <div class="field"><label for="carPhotos">车辆照片 / Car photos（可多选）</label><input id="carPhotos" type="file" accept="image/*" multiple><p class="small">可一次选择多张照片。新照片会加到现有照片后面。</p></div>
+          <div id="existingPhotos" class="small"></div>
+          <div class="actions">
+            <button class="primary" type="submit" id="saveBtn">保存车辆 / Save car</button>
+            <button class="lightbtn" type="button" onclick="resetForm()">取消 / Cancel</button>
+          </div>
+          <p id="saveStatus" class="status"></p>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>车辆管理 / Manage cars</h3>
+        <div id="manageList"></div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
-  <h3 id="footerTitle">想了解更多？欢迎联系。</h3>
-  <p id="footerText">WhatsApp 联系我们，预约看车。</p>
-  <a class="contact" href="https://wa.me/" target="_blank" rel="noopener" id="contact">WhatsApp 联系</a>
-  <p style="font-size:12px">DRIVE•SELECT Used Cars</p>
+  <p>二手车行 · Used Cars Malaysia</p>
+  <p id="footerText">欢迎通过 WhatsApp 查询车辆详情。</p>
 </footer>
 
 <script>
-const vehicles = [
-  {make:"Toyota",model:"Vios 1.5 G",year:2021,price:65800,emoji:"🚘"},
-  {make:"Honda",model:"City 1.5 S",year:2020,price:59800,emoji:"🚗"},
-  {make:"Perodua",model:"Myvi 1.5 H",year:2022,price:52800,emoji:"🚙"}
-];
+/* Supabase project settings */
+const SUPABASE_URL = "https://cjlottsfytrzcrzkhqhw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_MTYEky7DtKAnVL3l6R54jw_K37eWkNR";
+const ADMIN_UID = "4455a947-6106-408f-b7a8-339984348d7a";
+const BUCKET = "car-photos";
 
-const translations = {
- zh:{
-  heading:"找到适合你的下一辆车。",
-  intro:"精选二手车，价格清楚。欢迎预约看车，直接 WhatsApp 联系我们。",
-  browse:"浏览车辆 ↓",inventory:"精选车辆",
-  search:"搜索品牌或车型……",footer:"想了解更多？欢迎联系。",
-  footerText:"WhatsApp 联系我们，预约看车。",
-  contact:"WhatsApp 联系"
- },
- en:{
-  heading:"Find the right car for your next journey.",
-  intro:"Explore selected used cars with clear pricing. Contact us on WhatsApp to arrange a viewing.",
-  browse:"Browse Cars ↓",inventory:"Featured Cars",
-  search:"Search make or model…",footer:"Want to know more?",
-  footerText:"Message us on WhatsApp to arrange a viewing.",
-  contact:"Contact on WhatsApp"
- },
- ms:{
-  heading:"Cari kereta yang sesuai untuk anda.",
-  intro:"Pilihan kereta terpakai dengan harga yang jelas. Hubungi kami melalui WhatsApp untuk melihat kereta.",
-  browse:"Lihat Kereta ↓",inventory:"Kereta Pilihan",
-  search:"Cari jenama atau model…",footer:"Ingin tahu lebih lanjut?",
-  footerText:"Hubungi kami melalui WhatsApp untuk melihat kereta.",
-  contact:"Hubungi WhatsApp"
- }
+/* Replace this with your Malaysian WhatsApp number, country code included.
+   Example format: 60123456789 (digits only, no + or spaces). */
+const WHATSAPP_NUMBER = "";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let cars = [];
+let adminUser = null;
+let lang = "zh";
+let editingPhotos = [];
+
+const words = {
+ zh:{hero:"寻找适合你的好车",sub:"精选二手车 · 价格透明 · WhatsApp 直接联系",browse:"浏览车辆",inventory:"在售车辆",search:"搜索品牌、车型或关键词…",empty:"目前没有上架车辆，请稍后再来查看。",loading:"正在加载车辆…",failed:"车辆加载失败，请检查 Supabase 设置。",contact:"WhatsApp 查询",noNumber:"请先设置 WhatsApp 联系号码。",new:"最新上架",low:"价格由低至高",high:"价格由高至低",footer:"欢迎通过 WhatsApp 查询车辆详情。",photos:"张照片",offline:"已下架",online:"已上架"},
+ en:{hero:"Find Your Next Car",sub:"Quality Used Cars · Transparent Prices · Contact Us on WhatsApp",browse:"Browse Cars",inventory:"Available Cars",search:"Search make, model or keyword…",empty:"No cars listed yet. Please check back later.",loading:"Loading cars…",failed:"Could not load cars. Please check Supabase settings.",contact:"Enquire on WhatsApp",noNumber:"Please configure your WhatsApp number first.",new:"Newest first",low:"Price: low to high",high:"Price: high to low",footer:"Contact us on WhatsApp for vehicle details.",photos:" photos",offline:"Offline",online:"Listed"},
+ ms:{hero:"Cari Kereta Anda Seterusnya",sub:"Kereta Terpakai Berkualiti · Harga Jelas · Hubungi Melalui WhatsApp",browse:"Lihat Kereta",inventory:"Kereta Untuk Dijual",search:"Cari jenama, model atau kata kunci…",empty:"Tiada kereta disenaraikan buat masa ini.",loading:"Sedang memuatkan kereta…",failed:"Gagal memuatkan kereta. Sila semak tetapan Supabase.",contact:"Tanya di WhatsApp",noNumber:"Sila tetapkan nombor WhatsApp dahulu.",new:"Terbaharu",low:"Harga: rendah ke tinggi",high:"Harga: tinggi ke rendah",footer:"Hubungi kami melalui WhatsApp untuk maklumat lanjut.",photos:" foto",offline:"Tidak disenaraikan",online:"Disenaraikan"}
 };
 
-function changeLanguage() {
- const t = translations[document.getElementById("language").value];
- for (const id of ["heading","intro","browse","inventoryTitle","footerTitle","footerText","contact"]) {
-   document.getElementById(id).textContent = t[id];
- }
- document.getElementById("search").placeholder = t.search;
+function setLang(next){
+ lang=next;document.documentElement.lang=next;
+ const w=words[lang];
+ document.getElementById("heroTitle").textContent=w.hero;
+ document.getElementById("heroSub").textContent=w.sub;
+ document.getElementById("browseBtn").textContent=w.browse;
+ document.getElementById("inventoryTitle").textContent=w.inventory;
+ document.getElementById("search").placeholder=w.search;
+ document.getElementById("footerText").textContent=w.footer;
+ document.getElementById("sort").options[0].textContent=w.new;
+ document.getElementById("sort").options[1].textContent=w.low;
+ document.getElementById("sort").options[2].textContent=w.high;
  renderCars();
 }
-
-function renderCars() {
- const term = document.getElementById("search").value.toLowerCase();
- const list = vehicles.filter(v => (v.make+" "+v.model).toLowerCase().includes(term));
- document.getElementById("cars").innerHTML = list.map(v => `
-  <article class="car">
-   <div class="car-image">${v.emoji}</div>
-   <div class="car-info">
-    <h3>${v.make} ${v.model}</h3>
-    <p>${v.year} · Automatic</p>
-    <div class="price">RM ${v.price.toLocaleString()}</div>
-    <p><a class="contact" target="_blank" rel="noopener"
-      href="https://wa.me/?text=${encodeURIComponent("Hi, I'm interested in the "+v.year+" "+v.make+" "+v.model)}">WhatsApp Enquiry</a></p>
-   </div>
-  </article>
- `).join("");
+function safeText(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function money(value){return "RM "+Number(value||0).toLocaleString("en-MY",{maximumFractionDigits:2});}
+function photoList(car){
+ if(Array.isArray(car.image_urls)&&car.image_urls.length)return car.image_urls.filter(Boolean);
+ if(car.image_url)return [car.image_url];
+ return [];
 }
-renderCars();
+function showAdmin(){
+ document.getElementById("adminSection").classList.remove("hidden");
+ document.getElementById("adminSection").scrollIntoView({behavior:"smooth"});
+}
+async function loadCars(){
+ const status=document.getElementById("loadStatus");
+ status.textContent=words[lang].loading;
+ const {data,error}=await db.from("cars").select("*").eq("is_active",true).order("created_at",{ascending:false});
+ if(error){status.textContent=words[lang].failed+" ("+error.message+")";return;}
+ cars=data||[];
+ status.textContent=cars.length?"":"";
+ renderCars();
+}
+function renderCars(){
+ const grid=document.getElementById("carGrid");
+ const query=document.getElementById("search").value.trim().toLowerCase();
+ let list=cars.filter(c=>(String(c.title||"")+" "+String(c.description||"")).toLowerCase().includes(query));
+ const sort=document.getElementById("sort").value;
+ if(sort==="low")list.sort((a,b)=>Number(a.price)-Number(b.price));
+ if(sort==="high")list.sort((a,b)=>Number(b.price)-Number(a.price));
+ grid.innerHTML="";
+ if(!list.length){grid.innerHTML='<div class="panel">'+safeText(words[lang].empty)+'</div>';return;}
+ list.forEach(car=>{
+  const photos=photoList(car);
+  const card=document.createElement("article");card.className="card";
+  const gallery=document.createElement("div");gallery.className="gallery";
+  const img=document.createElement("img");img.alt=car.title||"Used car";img.loading="lazy";
+  if(photos.length)img.src=photos[0];else{img.src="";img.alt="No photo";img.className="noimage";img.style.display="none";}
+  gallery.appendChild(img);
+  if(photos.length>1){
+   let index=0;
+   const count=document.createElement("span");count.className="counter";count.textContent="1 / "+photos.length;
+   const prev=document.createElement("button");prev.className="arrow prev";prev.textContent="‹";prev.setAttribute("aria-label","Previous photo");
+   const next=document.createElement("button");next.className="arrow next";next.textContent="›";next.setAttribute("aria-label","Next photo");
+   function move(delta){index=(index+delta+photos.length)%photos.length;img.src=photos[index];count.textContent=(index+1)+" / "+photos.length;}
+   prev.onclick=()=>move(-1);next.onclick=()=>move(1);
+   gallery.append(prev,next,count);
+   let startX=0;
+   gallery.addEventListener("touchstart",e=>{startX=e.changedTouches[0].screenX},{passive:true});
+   gallery.addEventListener("touchend",e=>{const dx=e.changedTouches[0].screenX-startX;if(Math.abs(dx)>40)move(dx<0?1:-1)},{passive:true});
+  }
+  const body=document.createElement("div");body.className="cardbody";
+  body.innerHTML='<h3>'+safeText(car.title||"Used Car")+'</h3><div class="price">'+safeText(money(car.price))+'</div><div class="description">'+safeText(car.description||"")+'</div>';
+  const actions=document.createElement("div");actions.className="actions";
+  const wa=document.createElement("a");wa.className="wa";wa.href="#";wa.textContent=words[lang].contact;
+  wa.onclick=e=>{e.preventDefault();if(!WHATSAPP_NUMBER){alert(words[lang].noNumber);return;}const msg=encodeURIComponent("Hi, I am interested in "+(car.title||"this car")+" ("+money(car.price)+").");window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+msg,"_blank","noopener");};
+  actions.appendChild(wa);body.appendChild(actions);card.append(gallery,body);grid.appendChild(card);
+ });
+}
+function resetForm(){
+ document.getElementById("carForm").reset();
+ document.getElementById("editId").value="";
+ editingPhotos=[];
+ document.getElementById("existingPhotos").textContent="";
+ document.getElementById("formTitle").textContent="新增车辆 / Add car";
+ document.getElementById("saveStatus").textContent="";
+}
+async function login(){
+ const status=document.getElementById("loginStatus");
+ status.textContent="正在登录…";
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){status.textContent="登录失败："+error.message;return;}
+ if(!data.user||data.user.id!==ADMIN_UID){
+  await db.auth.signOut();status.textContent="这个账号不是指定的管理员账号。";return;
+ }
+ adminUser=data.user;status.textContent="";
+ await updateAdminView();
+}
+async function logout(){await db.auth.signOut();adminUser=null;updateAdminView();}
+async function updateAdminView(){
+ const {data}=await db.auth.getUser();
+ adminUser=data.user&&data.user.id===ADMIN_UID?data.user:null;
+ document.getElementById("loginPanel").classList.toggle("hidden",!!adminUser);
+ document.getElementById("adminPanel").classList.toggle("hidden",!adminUser);
+ if(adminUser){document.getElementById("adminStatus").textContent="管理员已登录。";await loadManageCars();}
+}
+async function loadManageCars(){
+ const list=document.getElementById("manageList");list.textContent="正在加载…";
+ const {data,error}=await db.from("cars").select("*").order("created_at",{ascending:false});
+ if(error){list.textContent="加载失败："+error.message;return;}
+ if(!data||!data.length){list.textContent="还没有车辆。";return;}
+ list.innerHTML="";
+ data.forEach(car=>{
+  const row=document.createElement("div");row.className="panel";
+  const state=car.is_active?words[lang].online:words[lang].offline;
+  row.innerHTML="<strong>"+safeText(car.title)+"</strong><p>"+safeText(money(car.price))+" · "+safeText(state)+"</p>";
+  const buttons=document.createElement("div");buttons.className="actions";
+  const edit=document.createElement("button");edit.className="lightbtn";edit.textContent="编辑 / Edit";edit.onclick=()=>editCar(car);
+  const toggle=document.createElement("button");toggle.className="darkbtn";toggle.textContent=car.is_active?"下架 / Hide":"重新上架 / List";
+  toggle.onclick=()=>toggleCar(car);
+  buttons.append(edit,toggle);row.appendChild(buttons);list.appendChild(row);
+ });
+}
+function editCar(car){
+ document.getElementById("editId").value=car.id;
+ document.getElementById("carTitle").value=car.title||"";
+ document.getElementById("carPrice").value=car.price??"";
+ document.getElementById("carDesc").value=car.description||"";
+ editingPhotos=photoList(car);
+ document.getElementById("existingPhotos").textContent="现有照片："+editingPhotos.length+" 张（新上传的照片会添加在后面）";
+ document.getElementById("formTitle").textContent="编辑车辆 / Edit car";
+ document.getElementById("saveStatus").textContent="";
+ document.getElementById("carForm").scrollIntoView({behavior:"smooth"});
+}
+async function saveCar(event){
+ event.preventDefault();
+ if(!adminUser||adminUser.id!==ADMIN_UID){alert("请先使用管理员账号登录。");return;}
+ const status=document.getElementById("saveStatus");const btn=document.getElementById("saveBtn");
+ btn.disabled=true;status.textContent="正在保存…";
+ try{
+  let urls=[...editingPhotos];
+  const files=Array.from(document.getElementById("carPhotos").files||[]);
+  for(const file of files){
+   if(!file.type.startsWith("image/"))throw new Error("只能上传图片文件。");
+   if(file.size>12*1024*1024)throw new Error("单张图片不能超过 12MB："+file.name);
+   const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-zA-Z0-9]/g,"").toLowerCase()||"jpg";
+   const path=adminUser.id+"/"+Date.now()+"-"+Math.random().toString(36).slice(2)+"."+ext;
+   const {error:upErr}=await db.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type});
+   if(upErr)throw upErr;
+   const {data:publicData}=db.storage.from(BUCKET).getPublicUrl(path);
+   urls.push(publicData.publicUrl);
+  }
+  const payload={
+   title:document.getElementById("carTitle").value.trim(),
+   price:Number(document.getElementById("carPrice").value),
+   description:document.getElementById("carDesc").value.trim(),
+   image_urls:urls,
+   image_url:urls[0]||null,
+   is_active:true
+  };
+  const id=document.getElementById("editId").value;
+  const result=id
+   ?await db.from("cars").update(payload).eq("id",id).select()
+   :await db.from("cars").insert(payload).select();
+  if(result.error)throw result.error;
+  status.textContent="保存成功！";
+  resetForm();await loadCars();await loadManageCars();
+ }catch(err){status.textContent="保存失败："+(err.message||String(err));}
+ finally{btn.disabled=false;}
+}
+async function toggleCar(car){
+ if(!adminUser||adminUser.id!==ADMIN_UID){alert("请先登录管理员账号。");return;}
+ const {error}=await db.from("cars").update({is_active:!car.is_active}).eq("id",car.id);
+ if(error){alert("操作失败："+error.message);return;}
+ await loadCars();await loadManageCars();
+}
+(async()=>{
+ setLang("zh");
+ await loadCars();
+ const {data}=await db.auth.getUser();
+ adminUser=data.user&&data.user.id===ADMIN_UID?data.user:null;
+ await updateAdminView();
+})();
 </script>
 </body>
 </html>
